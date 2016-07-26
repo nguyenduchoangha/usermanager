@@ -3,13 +3,18 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
+	"os"
+	"time"
 	//	"github.com/golang/protobuf/proto"
+	"github.com/SermoDigital/jose/crypto"
+	"github.com/SermoDigital/jose/jws"
+	//"github.com/SermoDigital/jose/jwt"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
-	"net"
-
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/grpclog"
+	"net"
 
 	pb "github.com/nguyenduchoangha/usermanager/proto"
 )
@@ -24,11 +29,28 @@ var (
 
 type userManagerServer struct{}
 
+func createJWT() string {
+	claims := jws.Claims{}
+	claims.SetSubject("s2t")
+	claims.SetExpiration(time.Now().AddDate(0, 0, 1))
+	//signMethod := jws.GetSigningMethod("HS256")
+	token := jws.NewJWT(claims, crypto.SigningMethodHS256)
+	signKey := []byte("hello world")
+	byteToken, err := token.Serialize(signKey)
+	if err != nil {
+		log.Fatal("Error signing the key. ", err)
+		os.Exit(1)
+	}
+
+	return string(byteToken)
+}
+
 func (s *userManagerServer) GetToken(ctx context.Context, info *pb.LoginRequest) (*pb.LoginReply, error) {
 	fmt.Println(info.Userid)
 	fmt.Println(info.Prodid)
 	fmt.Println(info.Task)
-	return &pb.LoginReply{"xxx.yyy.zzz", ""}, nil
+	tok := createJWT()
+	return &pb.LoginReply{tok, ""}, nil
 }
 
 func newServer() *userManagerServer {

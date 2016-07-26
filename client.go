@@ -2,10 +2,13 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	pb "github.com/nguyenduchoangha/usermanager/proto"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	//"google.golang.org/grpc/credentials"
+	"github.com/SermoDigital/jose/crypto"
+	"github.com/SermoDigital/jose/jws"
 	"google.golang.org/grpc/grpclog"
 	//	"io"
 )
@@ -23,6 +26,13 @@ func printToken(client pb.UserManagerClient, info *pb.LoginRequest) {
 		grpclog.Fatalf("%v.GetToken(_) = _, %v: ", client, err)
 	}
 	grpclog.Println(token)
+	jwt_data, _ := jws.ParseJWT([]byte(token.Token))
+	err = jwt_data.Validate([]byte("hello world"), crypto.SigningMethodHS256)
+	if err != nil {
+		fmt.Println("Error signature")
+	} else {
+		fmt.Println("Ok")
+	}
 }
 
 func main() {
