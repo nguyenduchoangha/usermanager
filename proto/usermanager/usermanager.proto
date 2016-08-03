@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "ai.autonomous.speechapps.usermanager";
+option java_outer_classname = "UserManagerProto";
+
+package usermanager;
+
+// Interface exported by the server.
+service UserManager {
+  // Obtains the feature at a given position.
+  rpc GetToken(LoginRequest) returns (LoginReply) {}
+
+  // A server-to-client streaming RPC.
+  //
+  // Obtains the Features available within the given Rectangle.  Results are
+  // streamed rather than returned at once (e.g. in a response message with a
+  // repeated field), as the rectangle may cover a large area and contain a
+  // huge number of features.
+  //rpc ListFeatures(Rectangle) returns (stream Feature) {}
+
+  // A client-to-server streaming RPC.
+  //
+  // Accepts a stream of Points on a route being traversed, returning a
+  // RouteSummary when traversal is completed.
+  //rpc RecordRoute(stream Point) returns (RouteSummary) {}
+
+  // A Bidirectional streaming RPC.
+  //
+  // Accepts a stream of RouteNotes sent while a route is being traversed,
+  // while receiving other RouteNotes (e.g. from other users).
+  //rpc RouteChat(stream RouteNote) returns (stream RouteNote) {}
+}
+
+message LoginRequest  {
+  string userid = 1;
+  string prodid = 2;
+  string task = 3;
+}
+
+message LoginReply {
+  string token = 1;
+  string err = 2;
+}
+

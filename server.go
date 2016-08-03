@@ -16,7 +16,7 @@ import (
 	"google.golang.org/grpc/grpclog"
 	"net"
 
-	pb "github.com/nguyenduchoangha/usermanager/proto"
+	pb "github.com/nguyenduchoangha/usermanager/proto/usermanager"
 )
 
 var (

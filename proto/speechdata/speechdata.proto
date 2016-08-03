@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "ai.autonomous.speechapps.speechdata";
+option java_outer_classname = "SpeechDataProto";
+
+package speechdata;
+
+// Interface exported by the server.
+service SpeechData {
+
+  // A client-to-server streaming RPC.
+  //
+  rpc RecordSpeech(stream RecordRequest) returns (RecordSummary) {}
+
+  // A Bidirectional streaming RPC.
+  //
+  // Accepts a stream of RouteNotes sent while a route is being traversed,
+  // while receiving other RouteNotes (e.g. from other users).
+  //rpc RouteChat(stream RouteNote) returns (stream RouteNote) {}
+}
+
+message RecordRequest  {
+  oneof streaming_request {
+    StreamingConfig streaming_config = 1;
+
+    // The audio data to be recognized. Sequential chunks of audio data are sent
+    // in sequential `StreamingRecognizeRequest` messages. The first
+    // `StreamingRecognizeRequest` message must not contain `audio_content` data
+    // and all subsequent `StreamingRecognizeRequest` messages must contain
+    // `audio_content` data. The audio bytes must be encoded as specified in
+    // `RecognitionConfig`. Note: as with all bytes fields, protobuffers use a
+    // pure binary representation (not base64).
+    bytes audio_content = 2 [ctype = CORD];
+  }
+
+}
+
+message StreamingConfig {
+  string tok = 1;
+  string key = 2;
+}
+
+message RecordSummary {
+  string hyp = 1;
+  string err = 2;
+}
+
